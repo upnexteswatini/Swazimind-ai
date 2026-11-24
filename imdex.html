@@ -1,0 +1,1999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SwaziMind — Eswatini's first AI</title>
+<meta name="description" content="SwaziMind is Eswatini's first AI assistant. Think, create, automate — with your approval on every action.">
+<meta name="theme-color" content="#0E7A3E">
+<link rel="icon" href="__FAV__">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --flag:url("__FLAG__");
+  --bg:#FFFFFF;
+  --tint:#F3F9F4;
+  --tint2:#EAF4EC;
+  --line:rgba(9,38,24,.10);
+  --line2:rgba(9,38,24,.17);
+  --text:#0A1B12;
+  --muted:#55685C;
+  --muted2:#63776B;
+  --green:#0E7A3E;
+  --green2:#12A04F;
+  --deep:#075A2C;
+  --soft:rgba(14,122,62,.09);
+  --gold:#F5C518;
+  --red:#B3121B;
+  --blue:#3E5EB9;
+  --radius:16px;
+  --radius-sm:11px;
+  --shadow:0 24px 48px -28px rgba(9,38,24,.42);
+  --shadow-sm:0 1px 2px rgba(9,38,24,.05),0 8px 20px -16px rgba(9,38,24,.35);
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;line-height:1.55;font-size:16px;overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:inherit}
+a{color:inherit;text-decoration:none}
+::selection{background:rgba(18,160,79,.22)}
+
+/* ============ BACKGROUND FX ============ */
+#bgfx{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
+  background:linear-gradient(180deg,#F1F9F3 0%,#FFFFFF 46%,#FFFFFF 100%)}
+#bgfx .orb{position:absolute;border-radius:50%;filter:blur(90px)}
+#bgfx .o1{width:560px;height:560px;background:radial-gradient(circle,#12A04F,transparent 66%);top:-240px;right:-140px;opacity:.16}
+#bgfx .o2{width:460px;height:460px;background:radial-gradient(circle,#0E7A3E,transparent 68%);top:360px;left:-220px;opacity:.10}
+#bgfx .o3{width:420px;height:420px;background:radial-gradient(circle,#F5C518,transparent 70%);bottom:-180px;right:8%;opacity:.10}
+#bgfx .grid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(14,122,62,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(14,122,62,.055) 1px,transparent 1px);
+  background-size:64px 64px;
+  mask-image:radial-gradient(ellipse 90% 55% at 50% 0%,#000 25%,transparent 76%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 55% at 50% 0%,#000 25%,transparent 76%);
+}
+
+/* ============ LAYOUT ============ */
+.wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+.view{display:none}
+.view.active{display:block}
+
+/* ============ BRAND ASSETS ============ */
+.lgimg{background-image:url(__LOGO__);background-size:cover;background-position:center;background-color:#fff;background-repeat:no-repeat}
+.lg-nav{width:34px;height:34px;border-radius:9px;flex:0 0 auto;box-shadow:0 0 0 1px var(--line)}
+.flag{width:24px;height:16px;border-radius:3px;background-image:var(--flag);background-size:cover;
+  background-position:center;display:inline-block;box-shadow:0 0 0 1px rgba(9,38,24,.14);flex:0 0 auto}
+.flag-lg{width:100%;aspect-ratio:3/2;border-radius:12px;background-image:var(--flag);
+  background-size:cover;background-position:center;box-shadow:0 0 0 1px var(--line)}
+
+/* ============ NAV ============ */
+.nav{position:sticky;top:0;z-index:60;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  background:rgba(255,255,255,.84);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:1180px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;cursor:pointer}
+.brand-name{font-weight:800;letter-spacing:-.02em;font-size:18px;color:var(--text)}
+.brand-name span{color:var(--green)}
+.nav-links{display:flex;gap:4px;margin-left:14px}
+.nav-links a{padding:8px 12px;border-radius:9px;font-size:14px;color:var(--muted);transition:.18s}
+.nav-links a:hover{color:var(--green);background:var(--soft)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+
+/* ============ BUTTONS ============ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 18px;border-radius:11px;font-weight:650;font-size:14.5px;
+  transition:.18s;border:1px solid transparent;white-space:nowrap}
+.btn-primary{background:linear-gradient(180deg,#15A455,#0B6B37);color:#fff;
+  box-shadow:0 10px 22px -12px rgba(11,107,55,.75),inset 0 1px 0 rgba(255,255,255,.22)}
+.btn-primary:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.btn-ghost{background:#fff;border-color:var(--line2);color:var(--text);box-shadow:var(--shadow-sm)}
+.btn-ghost:hover{background:var(--tint);border-color:rgba(14,122,62,.34);color:var(--green)}
+.btn-quiet{color:var(--muted)}
+.btn-quiet:hover{color:var(--green)}
+.btn-sm{padding:8px 13px;font-size:13.5px;border-radius:9px}
+.btn-block{width:100%}
+.btn-danger{background:#fff;border-color:rgba(179,18,27,.35);color:var(--red)}
+.btn-danger:hover{background:rgba(179,18,27,.06)}
+.btn[disabled]{opacity:.5;cursor:not-allowed;transform:none!important}
+
+/* ============ HERO ============ */
+.hero{padding:64px 0 44px}
+.hero-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:52px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;padding:6px 13px 6px 8px;
+  border:1px solid var(--line2);border-radius:999px;font-size:12.5px;color:var(--muted);
+  background:#fff;box-shadow:var(--shadow-sm);letter-spacing:.01em}
+.eyebrow b{color:var(--text);font-weight:650}
+h1.hero-title{font-size:clamp(38px,5.4vw,64px);line-height:1.03;letter-spacing:-.035em;
+  font-weight:820;margin:20px 0 0}
+h1.hero-title em{font-style:normal;background:linear-gradient(92deg,#075A2C,#12A04F 58%,#E8B800);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{color:var(--muted);font-size:17.5px;max-width:52ch;margin:20px 0 0}
+.hero-cta{display:flex;gap:10px;margin-top:30px;flex-wrap:wrap}
+.hero-meta{display:flex;gap:22px;margin-top:34px;flex-wrap:wrap}
+.hero-meta div{font-size:13px;color:var(--muted2)}
+.hero-meta strong{display:block;color:var(--green);font-size:15px;font-weight:750;letter-spacing:.02em}
+
+/* hero visual */
+.hero-card{position:relative;border-radius:24px;padding:20px;
+  background:#fff;border:1px solid var(--line);box-shadow:0 40px 70px -40px rgba(9,38,24,.45),0 2px 6px rgba(9,38,24,.05)}
+.hero-card:before{content:"";position:absolute;inset:-2px;border-radius:26px;z-index:-1;
+  background:linear-gradient(140deg,rgba(18,160,79,.45),rgba(245,197,24,.35),rgba(18,160,79,.12));filter:blur(14px);opacity:.5}
+.hero-card .logo-big,.hero-card .lg-big{width:100%;aspect-ratio:1/1;border-radius:18px;box-shadow:0 0 0 1px var(--line)}
+.hero-card .flagrow{display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 12px;
+  border:1px solid var(--line);border-radius:12px;background:var(--tint);font-size:12.5px;font-weight:650;color:var(--text)}
+.hero-card .flagrow small{display:block;color:var(--muted2);font-weight:500;font-size:11px}
+.float{position:absolute;display:flex;align-items:center;gap:9px;padding:9px 13px;
+  border-radius:12px;background:rgba(255,255,255,.97);border:1px solid var(--line2);
+  font-size:12.5px;font-weight:650;color:var(--text);box-shadow:0 16px 30px -18px rgba(9,38,24,.5);
+  backdrop-filter:blur(10px);animation:bob 5s ease-in-out infinite}
+.float .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+.f1{top:-14px;left:-14px}
+.f2{bottom:60px;right:-10px;animation-delay:.9s}
+.f3{bottom:-16px;left:34px;animation-delay:1.7s}
+.float small{display:block;color:var(--muted2);font-weight:500;font-size:11px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* flag stripe (real Eswatini proportions: blue / yellow / red / yellow / blue) */
+.flagstripe{height:4px;width:100%;
+  background:linear-gradient(90deg,#3E5EB9 0 18.75%,#F5C518 18.75% 25%,#B3121B 25% 75%,#F5C518 75% 81.25%,#3E5EB9 81.25% 100%)}
+
+/* ============ SECTIONS ============ */
+.section{padding:76px 0;position:relative;z-index:2}
+.section-head{max-width:640px;margin-bottom:38px}
+.kicker{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);font-weight:750}
+h2{font-size:clamp(27px,3.4vw,40px);letter-spacing:-.03em;line-height:1.12;margin:12px 0 0;font-weight:790;color:var(--text)}
+.section-head p{color:var(--muted);margin:14px 0 0;font-size:16.5px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow-sm)}
+.step-num{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;
+  font-size:13.5px;font-weight:800;background:var(--soft);color:var(--green);
+  border:1px solid rgba(14,122,62,.26);margin-bottom:16px}
+.card h3{font-size:17.5px;margin:0 0 8px;letter-spacing:-.015em;font-weight:730;color:var(--text)}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+
+/* apps strip */
+.apps-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.app-chip{display:flex;align-items:center;gap:11px;padding:14px 15px;border-radius:13px;
+  background:#fff;border:1px solid var(--line);transition:.18s;box-shadow:var(--shadow-sm)}
+.app-chip:hover{transform:translateY(-2px);border-color:rgba(14,122,62,.3);box-shadow:0 14px 26px -20px rgba(9,38,24,.5)}
+.app-chip .glyph{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;
+  font-size:14px;font-weight:800;color:#fff;flex:0 0 auto}
+.app-chip b{font-size:13.8px;font-weight:650;display:block;line-height:1.25;color:var(--text)}
+.app-chip small{font-size:11.5px;color:var(--muted2)}
+
+/* split feature */
+.split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.perm-list{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:10px}
+.perm-list li{display:flex;gap:11px;align-items:flex-start;font-size:14.6px;color:#284035}
+.perm-list .tick{width:19px;height:19px;border-radius:6px;flex:0 0 auto;display:grid;place-items:center;
+  background:var(--soft);border:1px solid rgba(14,122,62,.3);font-size:11px;color:var(--green);margin-top:2px;font-weight:800}
+.mock{background:var(--tint);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow)}
+.mock-bar{display:flex;gap:6px;margin-bottom:14px}
+.mock-bar i{width:9px;height:9px;border-radius:50%;background:rgba(9,38,24,.14);display:block}
+.mock-bubble{padding:11px 14px;border-radius:13px;font-size:13.4px;margin-bottom:9px;max-width:88%}
+.mock-user{background:linear-gradient(180deg,#15A455,#0B6B37);color:#fff;margin-left:auto}
+.mock-ai{background:#fff;border:1px solid var(--line);color:#284035}
+.mock-approve{background:#fff;border:1px solid rgba(14,122,62,.3);border-radius:13px;padding:13px;
+  box-shadow:0 10px 22px -18px rgba(9,38,24,.5)}
+.mock-approve .row{display:flex;gap:8px;margin-top:11px}
+.mock-btn{font-size:12px;font-weight:700;padding:7px 13px;border-radius:8px;border:1px solid var(--line2);color:var(--text)}
+.mock-btn.go{background:linear-gradient(180deg,#15A455,#0B6B37);border-color:transparent;color:#fff}
+.mock-btn.no{color:var(--muted)}
+
+/* consent callout */
+.callout{display:flex;gap:14px;padding:18px 20px;border-radius:14px;
+  background:var(--soft);border:1px solid rgba(14,122,62,.24);font-size:14.3px;color:#26402F}
+.callout .ico{font-size:17px;line-height:1.4}
+
+/* flag feature */
+.flagcard{display:grid;grid-template-columns:230px 1fr;gap:26px;align-items:center;
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow-sm)}
+.flagcard .flag-lg{box-shadow:0 14px 30px -18px rgba(9,38,24,.5),0 0 0 1px var(--line)}
+.flagcard h3{margin:0 0 8px;font-size:18px}
+.flagcard p{margin:0;color:var(--muted);font-size:14.3px}
+.swatchrow{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap}
+.swatch{display:flex;align-items:center;gap:7px;font-size:11.8px;color:var(--muted2);font-weight:600}
+.swatch i{width:14px;height:14px;border-radius:4px;display:block;box-shadow:inset 0 0 0 1px rgba(9,38,24,.12)}
+
+/* footer */
+footer{border-top:1px solid var(--line);padding:40px 0 56px;position:relative;z-index:2;background:#fff}
+.foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
+.foot p{margin:0;color:var(--muted2);font-size:13px}
+.foot .fbrand{display:flex;align-items:center;gap:10px}
+.foot .fmeta{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted2);font-weight:600}
+
+/* ============ AUTH ============ */
+.auth-wrap{min-height:calc(100vh - 60px);display:grid;place-items:center;padding:48px 20px}
+.auth-card{width:100%;max-width:432px;background:#fff;border:1px solid var(--line2);
+  border-radius:20px;padding:30px;box-shadow:var(--shadow)}
+.auth-logo,.lg-auth{width:56px;height:56px;border-radius:14px;margin:0 auto 18px;box-shadow:0 0 0 1px var(--line)}
+.auth-card h2{font-size:24px;text-align:center;margin:0 0 6px}
+.auth-card .sub{text-align:center;color:var(--muted);font-size:14px;margin:0 0 22px}
+.tabs{display:flex;gap:4px;padding:4px;background:var(--tint);border:1px solid var(--line);
+  border-radius:11px;margin-bottom:20px}
+.tab{flex:1;padding:9px;border-radius:8px;font-size:13.8px;font-weight:650;color:var(--muted);transition:.16s}
+.tab.on{background:#fff;color:var(--green);box-shadow:var(--shadow-sm)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.6px;font-weight:650;color:var(--muted);margin-bottom:6px;letter-spacing:.01em}
+.field input,.field textarea,.field select{width:100%;padding:12px 14px;border-radius:10px;
+  background:#fff;border:1px solid var(--line2);color:var(--text);outline:none;transition:.16s;font-size:14.5px}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(14,122,62,.65);box-shadow:0 0 0 3px rgba(14,122,62,.14)}
+.field input::placeholder{color:#9BABA2}
+.field .hint{font-size:12px;color:var(--muted2);margin-top:6px}
+.divider{display:flex;align-items:center;gap:12px;color:var(--muted2);font-size:12px;margin:18px 0}
+.divider:before,.divider:after{content:"";height:1px;flex:1;background:var(--line)}
+.err{color:var(--red);font-size:13px;margin:0 0 12px;display:none;font-weight:600}
+.err.on{display:block}
+.legal{font-size:11.8px;color:var(--muted2);text-align:center;margin:16px 0 0;line-height:1.5}
+.code-input{letter-spacing:.6em;text-align:center;font-size:22px!important;font-weight:750;
+  padding:15px 10px!important;font-variant-numeric:tabular-nums;color:var(--green)!important}
+.back-link{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-bottom:14px}
+.back-link:hover{color:var(--green)}
+.mail-hint{background:rgba(245,197,24,.14);border:1px solid rgba(232,184,0,.45);border-radius:11px;
+  padding:12px 14px;font-size:13px;color:#5A4A00;margin-bottom:16px}
+.mail-hint b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;letter-spacing:.18em;color:#0A1B12}
+
+/* ============ APP SHELL ============ */
+.shell{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.sidebar{border-right:1px solid var(--line);padding:16px 12px;background:var(--tint);
+  display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.side-brand{display:flex;align-items:center;gap:9px;padding:2px 10px 14px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.side-item{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;
+  font-size:14.2px;font-weight:600;color:var(--muted);transition:.16s;width:100%;text-align:left}
+.side-item:hover{background:rgba(14,122,62,.07);color:var(--green)}
+.side-item.on{background:#fff;color:var(--green);box-shadow:0 0 0 1px rgba(14,122,62,.22),var(--shadow-sm)}
+.side-item .si{width:18px;text-align:center;font-size:15px;opacity:.95}
+.side-foot{margin-top:auto;padding:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted2)}
+.side-foot b{color:var(--text);display:block;font-size:12.8px;word-break:break-all}
+.main{padding:26px 30px 60px;max-width:1000px;width:100%;background:#fff}
+.panel{display:none}
+.panel.active{display:block}
+.page-title{font-size:25px;letter-spacing:-.025em;margin:0 0 5px;font-weight:780;color:var(--text)}
+.page-sub{color:var(--muted);font-size:14.3px;margin:0 0 22px}
+
+/* chat */
+.chat-box{border:1px solid var(--line);border-radius:var(--radius);background:#fff;
+  display:flex;flex-direction:column;height:min(66vh,620px);overflow:hidden;box-shadow:var(--shadow-sm)}
+.chat-log{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;background:#FBFDFB}
+.chat-log::-webkit-scrollbar{width:8px}
+.chat-log::-webkit-scrollbar-thumb{background:rgba(9,38,24,.16);border-radius:8px}
+.msg{display:flex;gap:10px;max-width:88%}
+.msg.user{margin-left:auto;flex-direction:row-reverse}
+.avatar{width:28px;height:28px;border-radius:8px;flex:0 0 auto;display:grid;place-items:center;
+  font-size:12px;font-weight:800;background:#fff;overflow:hidden;box-shadow:0 0 0 1px var(--line)}
+.avatar img,.avatar .lgimg{width:100%;height:100%;object-fit:cover;border-radius:8px}
+.avatar.u{background:linear-gradient(180deg,#15A455,#0B6B37);color:#fff;box-shadow:none}
+.bubble{padding:11px 15px;border-radius:14px;font-size:14.4px;line-height:1.6;white-space:pre-wrap;word-break:break-word}
+.msg.ai .bubble{background:#fff;border:1px solid var(--line);border-top-left-radius:4px;color:#1D3227}
+.msg.user .bubble{background:linear-gradient(180deg,#15A455,#0B6B37);color:#fff;border-top-right-radius:4px}
+.msg.sys{max-width:100%;justify-content:center}
+.msg.sys .bubble{background:transparent;border:1px dashed var(--line2);color:var(--muted2);font-size:12.6px;border-radius:10px}
+.typing{display:flex;gap:4px;padding:4px 2px}
+.typing i{width:6px;height:6px;border-radius:50%;background:var(--green);animation:blink 1.2s infinite}
+.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.chat-input{border-top:1px solid var(--line);padding:12px;display:flex;gap:10px;background:#fff}
+.chat-input textarea{flex:1;resize:none;height:46px;max-height:130px;padding:12px 14px;border-radius:11px;
+  background:#fff;border:1px solid var(--line2);color:var(--text);outline:none;font-size:14.4px;line-height:1.4}
+.chat-input textarea:focus{border-color:rgba(14,122,62,.6);box-shadow:0 0 0 3px rgba(14,122,62,.12)}
+.chat-input .send{width:46px;height:46px;border-radius:11px;background:linear-gradient(180deg,#15A455,#0B6B37);
+  display:grid;place-items:center;font-size:17px;flex:0 0 auto;color:#fff;
+  box-shadow:0 8px 18px -10px rgba(11,107,55,.9)}
+.suggest{display:flex;gap:8px;flex-wrap:wrap;padding:0 12px 12px;background:#fff}
+.suggest button{font-size:12.6px;padding:7px 12px;border-radius:999px;border:1px solid var(--line2);
+  color:var(--muted);background:#fff;transition:.16s}
+.suggest button:hover{color:var(--green);border-color:rgba(14,122,62,.4);background:var(--tint)}
+
+/* action approval card */
+.action-card{border:1px solid rgba(14,122,62,.32);background:var(--soft);
+  border-radius:13px;padding:14px;margin-top:10px;max-width:100%}
+.action-card .ac-top{display:flex;align-items:center;gap:8px;font-size:11.6px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.09em;color:var(--deep);margin-bottom:7px}
+.action-card h4{margin:0 0 6px;font-size:14.6px;font-weight:700;color:var(--text)}
+.action-card p{margin:0;font-size:13.2px;color:#3A5245}
+.action-card .ac-foot{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.action-card.done{border-color:rgba(14,122,62,.5);background:rgba(18,160,79,.13)}
+.action-card.done .ac-top{color:var(--deep)}
+.action-card.declined{border-color:var(--line2);background:#F7F9F8;opacity:.85}
+.action-card.declined .ac-top{color:var(--muted2)}
+
+/* connections */
+.conn-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:14px}
+.conn-card{border:1px solid var(--line);border-radius:var(--radius);padding:17px;background:#fff;
+  box-shadow:var(--shadow-sm);transition:.18s}
+.conn-card:hover{border-color:rgba(14,122,62,.3)}
+.conn-top{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.conn-top .glyph{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+  font-size:15px;font-weight:800;color:#fff;flex:0 0 auto}
+.conn-top b{font-size:14.6px;display:block;line-height:1.3;color:var(--text)}
+.conn-top small{font-size:11.8px;color:var(--muted2)}
+.conn-card p{font-size:12.9px;color:var(--muted);margin:0 0 14px;min-height:34px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.4px;font-weight:750;
+  padding:4px 9px;border-radius:999px;letter-spacing:.02em}
+.pill.on{background:var(--soft);color:var(--deep);border:1px solid rgba(14,122,62,.3)}
+.pill.off{background:#F5F8F6;color:var(--muted2);border:1px solid var(--line2)}
+.conn-actions{display:flex;gap:8px;align-items:center;justify-content:space-between}
+.conn-actions .addr{font-size:11.8px;color:var(--muted2);word-break:break-all}
+
+/* activity */
+.timeline{display:grid;gap:2px}
+.tl-item{display:grid;grid-template-columns:22px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.tl-item:last-child{border-bottom:0}
+.tl-dot{width:9px;height:9px;border-radius:50%;background:var(--green);margin-top:7px;justify-self:center}
+.tl-dot.red{background:var(--red)}.tl-dot.green{background:var(--green2)}.tl-dot.blue{background:var(--blue)}
+.tl-item b{font-size:13.9px;font-weight:650;display:block;color:var(--text)}
+.tl-item small{font-size:12px;color:var(--muted2)}
+.empty{padding:34px;text-align:center;color:var(--muted2);font-size:13.6px;
+  border:1px dashed var(--line2);border-radius:14px;background:var(--tint)}
+
+/* settings rows */
+.row-set{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px 0;border-bottom:1px solid var(--line)}
+.row-set:last-child{border-bottom:0}
+.row-set b{font-size:14.2px;display:block;color:var(--text)}
+.row-set small{font-size:12.5px;color:var(--muted2)}
+.switch{width:44px;height:25px;border-radius:999px;background:rgba(9,38,24,.18);position:relative;transition:.2s;flex:0 0 auto}
+.switch:after{content:"";position:absolute;top:3px;left:3px;width:19px;height:19px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(9,38,24,.3)}
+.switch.on{background:linear-gradient(180deg,#15A455,#0B6B37)}
+.switch.on:after{left:22px}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:200;display:none;place-items:center;padding:20px;
+  background:rgba(10,27,18,.45);backdrop-filter:blur(6px)}
+.modal.on{display:grid}
+.modal-card{width:100%;max-width:476px;background:#fff;border:1px solid var(--line2);
+  border-radius:18px;padding:26px;box-shadow:0 40px 80px -30px rgba(9,38,24,.55);max-height:92vh;overflow-y:auto;position:relative}
+.modal-card h3{font-size:20px;margin:0 0 6px;letter-spacing:-.02em;color:var(--text)}
+.modal-card .msub{color:var(--muted);font-size:13.6px;margin:0 0 18px}
+.modal-x{position:absolute;top:14px;right:14px}
+.perm-scroll{max-height:246px;overflow-y:auto;border:1px solid var(--line);border-radius:12px;
+  padding:14px 16px;background:var(--tint);margin:6px 0 16px}
+.perm-scroll ul{margin:0;padding-left:18px}
+.perm-scroll li{font-size:13.2px;color:#2C453A;margin-bottom:9px;line-height:1.5}
+.perm-scroll li b{color:var(--text)}
+.consent{display:flex;gap:10px;align-items:flex-start;font-size:12.8px;color:#2C453A;
+  background:rgba(245,197,24,.12);border:1px solid rgba(232,184,0,.42);border-radius:11px;padding:12px;margin-bottom:14px}
+.consent input{margin-top:2px;accent-color:#0E7A3E;width:16px;height:16px;flex:0 0 auto}
+.stepper{display:flex;gap:6px;margin-bottom:18px}
+.stepper i{height:3px;flex:1;border-radius:3px;background:rgba(9,38,24,.14)}
+.stepper i.on{background:var(--green)}
+
+/* toast */
+#toast-root{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:300;
+  display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:#0A1B12;border:1px solid rgba(255,255,255,.14);color:#fff;
+  padding:11px 18px;border-radius:11px;font-size:13.6px;box-shadow:var(--shadow);
+  animation:pop .25s ease;max-width:90vw}
+.toast.ok{background:#0B6B37;border-color:rgba(255,255,255,.2)}
+.toast.bad{background:#8E0F16;border-color:rgba(255,255,255,.2)}
+@keyframes pop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* mail preview */
+#mailpanel{position:fixed;right:-400px;top:0;height:100%;width:376px;max-width:92vw;z-index:250;
+  background:#fff;border-left:1px solid var(--line2);padding:22px;transition:right .3s ease;
+  box-shadow:-24px 0 60px -30px rgba(9,38,24,.5);overflow-y:auto}
+#mailpanel.on{right:0}
+#mailpanel h4{margin:0 0 4px;font-size:15px;color:var(--text)}
+#mailpanel .mph{font-size:11.6px;color:var(--muted2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
+.mail-item{border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;background:var(--tint)}
+.mail-item .from{font-size:12px;color:var(--muted2);margin-bottom:6px}
+.mail-item .subj{font-size:13.8px;font-weight:700;margin-bottom:8px;color:var(--text)}
+.mail-item .body{font-size:12.9px;color:#3A5245;line-height:1.55}
+.mail-item .code{font-family:ui-monospace,Menlo,monospace;font-size:22px;letter-spacing:.3em;
+  color:var(--deep);margin:10px 0;font-weight:750}
+#mailFab{position:fixed;right:16px;bottom:20px;z-index:150;display:none;align-items:center;gap:7px;
+  background:#fff;border:1px solid var(--line2);border-radius:999px;padding:9px 15px;
+  font-size:12.5px;font-weight:650;box-shadow:0 16px 30px -18px rgba(9,38,24,.5);color:var(--text)}
+#mailFab:hover{border-color:rgba(14,122,62,.4);color:var(--green)}
+#mailCount{background:var(--green);color:#fff;border-radius:999px;padding:0 6px;font-size:11px;min-width:18px;text-align:center}
+#mailpanel h4{padding-right:34px}
+@media (max-width:760px){ #mailFab{bottom:86px;padding:8px 13px;font-size:12px} }
+@media (max-width:980px){
+  .float{display:none}
+  .hero-grid{grid-template-columns:1fr;gap:40px}
+  .split{grid-template-columns:1fr;gap:32px}
+  .grid3{grid-template-columns:1fr}
+  .apps-strip{grid-template-columns:repeat(2,1fr)}
+  .nav-links{display:none}
+  .flagcard{grid-template-columns:1fr;gap:18px}
+}
+@media (max-width:760px){
+  .shell{grid-template-columns:1fr}
+  .side-brand{display:none}
+  .sidebar{position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;flex-direction:row;
+    border-right:0;border-top:1px solid var(--line);padding:7px 8px;background:rgba(255,255,255,.97);
+    backdrop-filter:blur(16px);z-index:80;gap:2px;justify-content:space-around}
+  .side-item{flex-direction:column;gap:3px;font-size:10.5px;padding:7px 4px;text-align:center;align-items:center}
+  .side-item .si{font-size:17px}
+  .side-foot{display:none}
+  .main{padding:20px 16px 96px}
+  .hero{padding:38px 0 24px}
+  .section{padding:52px 0}
+  .wrap{padding:0 18px}
+  .chat-box{height:calc(100vh - 250px)}
+  .msg{max-width:94%}
+  .conn-grid{grid-template-columns:1fr}
+  .nav-inner{padding:10px 16px;gap:10px}
+}
+</style>
+</head>
+<body>
+<div id="bgfx"><div class="grid"></div><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<header class="nav" id="topnav">
+  <div class="nav-inner">
+    <div class="brand" onclick="go('landing')">
+      <div class="lgimg lg-nav" role="img" aria-label="SwaziMind logo"></div>
+      <div class="brand-name">Swazi<span>Mind</span></div>
+    </div>
+    <nav class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#apps">Connect apps</a>
+      <a href="#control">Control</a>
+      <a href="#flag">Our flag</a>
+      <a href="#consent">Your consent</a>
+    </nav>
+    <div class="nav-right" id="navRight">
+      <button class="btn btn-quiet btn-sm" onclick="go('auth','signin')">Sign in</button>
+      <button class="btn btn-primary btn-sm" onclick="go('auth','signup')">Get started</button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= LANDING ================= -->
+<section id="view-landing" class="view active">
+  <div class="wrap hero">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow"><span class="flag" role="img" aria-label="Flag of Eswatini"></span> <b>Made in Eswatini</b> · Africa's newest AI</div>
+        <h1 class="hero-title">Sawubona. Meet <em>SwaziMind</em>, Eswatini's first AI.</h1>
+        <p class="lede">An assistant that thinks with you, creates for you, and automates the rest. Connect your email and the tools you already use. SwaziMind works on your behalf, and only ever acts after you approve it.</p>
+        <div class="hero-cta">
+          <button class="btn btn-primary" onclick="go('auth','signup')">Create your account</button>
+          <button class="btn btn-ghost" onclick="go('auth','signin')">I already have one</button>
+        </div>
+        <div class="hero-meta">
+          <div><strong>THINK</strong>Ask anything, in your words</div>
+          <div><strong>CREATE</strong>Drafts, plans, replies</div>
+          <div><strong>AUTOMATE</strong>With approval, always</div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="float f1"><span class="dot" style="background:#12A04F"></span><div>Email connected<small>Verified by code</small></div></div>
+        <div class="float f2"><span class="dot" style="background:#E8B800"></span><div>Waiting for approval<small>2 actions queued</small></div></div>
+        <div class="float f3"><span class="dot" style="background:#0E7A3E"></span><div>Built for Eswatini<small>Local first</small></div></div>
+        <div class="lgimg lg-big" role="img" aria-label="SwaziMind identity"></div>
+        <div class="flagrow">
+          <span class="flag" role="img" aria-label="Flag of Eswatini"></span>
+          <div>Proudly Eswatini<small>Kingdom of Eswatini · Afrika</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flagstripe"></div>
+
+  <!-- HOW -->
+  <div class="wrap section" id="how">
+    <div class="section-head">
+      <div class="kicker">How it works</div>
+      <h2>Three steps and your agent is working.</h2>
+      <p>No downloads, no setup calls. Your account, your apps, your rules.</p>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <div class="step-num">1</div>
+        <h3>Create your account</h3>
+        <p>Sign up with your email. We send a 6 digit code to prove it's you, you paste it back, and your SwaziMind account is live.</p>
+      </div>
+      <div class="card">
+        <div class="step-num">2</div>
+        <h3>Connect your apps</h3>
+        <p>Add Gmail, Google Calendar, Drive, Slack and more. Each connection is verified with a code sent to that address, then you approve exactly what SwaziMind may do.</p>
+      </div>
+      <div class="card">
+        <div class="step-num">3</div>
+        <h3>Approve and go</h3>
+        <p>Your agent drafts, reads, plans and prepares. Nothing is sent, deleted or booked until you tap approve on the action card.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- APPS -->
+  <div class="wrap section" id="apps">
+    <div class="section-head">
+      <div class="kicker">Connections</div>
+      <h2>Connect the tools you already use.</h2>
+      <p>Every connection is verified by an emailed code and limited to the permissions you approve. Revoke any of them in one tap.</p>
+    </div>
+    <div class="apps-strip" id="appsStrip"></div>
+    <div class="callout" style="margin-top:20px">
+      <span class="ico">🔐</span>
+      <div>Two ways to connect: <b>email code verification</b> (enter your address, we send a code, you paste it back) or <b>OAuth consent</b> where the provider supports it. Either way, the permission list is shown before anything is granted.</div>
+    </div>
+  </div>
+
+  <!-- CONTROL -->
+  <div class="wrap section" id="control">
+    <div class="split">
+      <div>
+        <div class="kicker">You stay in control</div>
+        <h2>It never acts behind your back.</h2>
+        <p class="lede" style="font-size:16px">SwaziMind prepares the work. You make the call. Every action that touches the outside world arrives as a card you can approve or decline.</p>
+        <ul class="perm-list">
+          <li><span class="tick">✓</span><div><b>Read-only by default.</b> Looking is allowed. Sending, deleting, booking and paying never is.</div></li>
+          <li><span class="tick">✓</span><div><b>Approval on every action.</b> Approve, decline, or edit the draft first.</div></li>
+          <li><span class="tick">✓</span><div><b>Full activity log.</b> Every task your agent did, with the time and the app.</div></li>
+          <li><span class="tick">✓</span><div><b>Disconnect anytime.</b> Revoking an app stops access immediately.</div></li>
+        </ul>
+      </div>
+      <div class="mock">
+        <div class="mock-bar"><i></i><i></i><i></i></div>
+        <div class="mock-bubble mock-user">Reply to the editor and confirm the article is ready for review.</div>
+        <div class="mock-bubble mock-ai">I drafted a reply to Thobeka and attached the final draft. Nothing has been sent yet.</div>
+        <div class="mock-approve">
+          <div style="font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:#075A2C;font-weight:800">Approval needed · Gmail</div>
+          <div style="font-size:13.4px;margin-top:6px">Send email to <b>editor@publication.sz</b> — subject: "Article ready for review"</div>
+          <div class="row"><span class="mock-btn go">Approve &amp; send</span><span class="mock-btn no">Decline</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- FLAG -->
+  <div class="wrap section" id="flag">
+    <div class="flagcard">
+      <div class="flag-lg" role="img" aria-label="Flag of Eswatini"></div>
+      <div>
+        <div class="kicker">Our flag</div>
+        <h3 style="margin-top:10px">The flag of the Kingdom of Eswatini.</h3>
+        <p>Nkwe! SwaziMind wears the real flag: the blue of peace, the yellow of our mineral wealth, the crimson of our battles, and the Nguni shield with its two spears, held together by the tassel of black widowbird feathers.</p>
+        <div class="swatchrow">
+          <span class="swatch"><i style="background:#3E5EB9"></i>Blue</span>
+          <span class="swatch"><i style="background:#F5C518"></i>Yellow</span>
+          <span class="swatch"><i style="background:#B3121B"></i>Crimson</span>
+          <span class="swatch"><i style="background:#0A1B12"></i>Black</span>
+          <span class="swatch"><i style="background:#FFFFFF"></i>White</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONSENT -->
+  <div class="wrap section" id="consent">
+    <div class="section-head">
+      <div class="kicker">Your consent, in plain language</div>
+      <h2>What giving us the code actually means.</h2>
+      <p>Before a connection is created we show you the full list. When you paste the verification code back, you are agreeing to it. Nothing hidden, nothing pre-ticked.</p>
+    </div>
+    <div class="card" style="max-width:820px">
+      <p style="color:#CFD4DE;font-size:15px;margin-bottom:14px">By entering and submitting the verification code, you allow SwaziMind to manage your connected account and to:</p>
+      <div class="perm-scroll" style="max-height:none;background:rgba(0,0,0,.24)">
+        <ul>
+          <li>Read messages and emails in the connected account</li>
+          <li>Search your mailbox, files and calendar</li>
+          <li>Draft replies, documents and summaries in your name</li>
+          <li>Create and edit calendar events and reminders</li>
+          <li>Send, forward or reply to messages <b>only after you approve each one</b></li>
+          <li>Archive, label and organise items you approve</li>
+          <li>Store the access token needed to keep the connection alive</li>
+        </ul>
+      </div>
+      <p style="font-size:13px;color:var(--muted2);margin:14px 0 0">You can revoke any of this at any time from Connections. Revoking a code-based connection invalidates the token immediately.</p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrap foot">
+      <div class="brand" onclick="go('landing')">
+        <div class="lgimg lg-nav" role="img" aria-label="SwaziMind"></div>
+        <div class="brand-name">Swazi<span>Mind</span></div>
+      </div>
+      <div class="fmeta"><span class="flag" role="img" aria-label="Flag of Eswatini"></span> Think · Create · Automate · built in Eswatini</div>
+      <p>© <span id="yr"></span> SwaziMind</p>
+    </div>
+  </footer>
+</section>
+
+<!-- ================= AUTH ================= -->
+<section id="view-auth" class="view">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="lgimg lg-auth" role="img" aria-label="SwaziMind"></div>
+      <h2 id="authTitle">Welcome back</h2>
+      <p class="sub" id="authSub">Sign in to your SwaziMind account.</p>
+
+      <!-- step: signin / signup -->
+      <div id="authStep1">
+        <div class="tabs">
+          <button class="tab" id="tabSignin" onclick="setAuthMode('signin')">Sign in</button>
+          <button class="tab" id="tabSignup" onclick="setAuthMode('signup')">Create account</button>
+        </div>
+        <p class="err" id="authErr"></p>
+        <div class="field" id="nameField" style="display:none">
+          <label for="fName">Full name</label>
+          <input id="fName" type="text" placeholder="Mayibongwe Mphila" autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="fEmail">Email address</label>
+          <input id="fEmail" type="email" placeholder="you@example.com" autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="fPass">Password</label>
+          <input id="fPass" type="password" placeholder="At least 8 characters" autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary btn-block" id="authSubmit" onclick="submitAuth()">Sign in</button>
+        <div class="divider">or</div>
+        <button class="btn btn-ghost btn-block" onclick="startPasswordless()">Email me a sign-in code instead</button>
+        <p class="legal">By continuing you agree that SwaziMind may act on your behalf <b>only after you approve each action</b>.</p>
+      </div>
+
+      <!-- step: verify -->
+      <div id="authStep2" style="display:none">
+        <button class="back-link" onclick="backToAuth1()">← Back</button>
+        <div class="mail-hint" id="authCodeHint"></div>
+        <div class="field">
+          <label for="fCode">6 digit verification code</label>
+          <input id="fCode" class="code-input" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+          <div class="hint" id="authCodeHint2"></div>
+        </div>
+        <p class="err" id="codeErr"></p>
+        <button class="btn btn-primary btn-block" onclick="verifyAuthCode()">Verify and continue</button>
+        <button class="btn btn-quiet btn-block btn-sm" style="margin-top:8px" onclick="resendAuthCode()">Resend code</button>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ================= APP ================= -->
+<section id="view-app" class="view">
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="side-brand">
+        <div class="lgimg lg-nav" role="img" aria-label="SwaziMind"></div>
+        <div class="brand-name" style="font-size:15.5px">Swazi<span>Mind</span></div>
+      </div>
+      <button class="side-item on" data-panel="chat" onclick="showPanel('chat')"><span class="si">💬</span>Chat</button>
+      <button class="side-item" data-panel="connections" onclick="showPanel('connections')"><span class="si">🔗</span>Connections</button>
+      <button class="side-item" data-panel="activity" onclick="showPanel('activity')"><span class="si">📋</span>Activity</button>
+      <button class="side-item" data-panel="settings" onclick="showPanel('settings')"><span class="si">⚙️</span>Settings</button>
+      <div class="side-foot">
+        <b id="sideEmail">—</b>
+        <span id="sidePlan">SwaziMind · Free</span>
+      </div>
+    </aside>
+
+    <div class="main">
+      <!-- CHAT -->
+      <div class="panel active" id="panel-chat">
+        <h2 class="page-title">Your agent</h2>
+        <p class="page-sub" id="chatSub">Ask, plan or hand over a task. It prepares. You approve.</p>
+        <div class="chat-box">
+          <div class="chat-log" id="chatLog"></div>
+          <div class="suggest" id="chatSuggest">
+            <button onclick="quickAsk('What can you do for me?')">What can you do?</button>
+            <button onclick="quickAsk('Draft a reply to my latest email')">Draft a reply</button>
+            <button onclick="quickAsk('Plan my week and put it in my calendar')">Plan my week</button>
+            <button onclick="quickAsk('Which apps do I have connected?')">My connections</button>
+          </div>
+          <div class="chat-input">
+            <textarea id="chatInput" placeholder="Message SwaziMind…" rows="1"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"
+              oninput="this.style.height='46px';this.style.height=Math.min(this.scrollHeight,130)+'px'"></textarea>
+            <button class="send" onclick="sendChat()" aria-label="Send">➤</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONNECTIONS -->
+      <div class="panel" id="panel-connections">
+        <h2 class="page-title">Connections</h2>
+        <p class="page-sub">Each app is verified by a code sent to its address, then limited to the permissions you approve.</p>
+        <div class="conn-grid" id="connGrid"></div>
+      </div>
+
+      <!-- ACTIVITY -->
+      <div class="panel" id="panel-activity">
+        <h2 class="page-title">Activity</h2>
+        <p class="page-sub">Everything your agent did, and everything you approved or declined.</p>
+        <div id="activityList"></div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="panel" id="panel-settings">
+        <h2 class="page-title">Settings</h2>
+        <p class="page-sub">Your account, your approval rules, your model.</p>
+
+        <div class="card" style="margin-bottom:16px">
+          <h3 style="margin-bottom:14px">Account</h3>
+          <div class="field"><label>Full name</label><input id="setName" type="text"></div>
+          <div class="field"><label>Email</label><input id="setEmail" type="email" disabled style="opacity:.65"></div>
+          <button class="btn btn-ghost btn-sm" onclick="saveProfile()">Save profile</button>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <h3 style="margin-bottom:6px">Approval rules</h3>
+          <div class="row-set">
+            <div><b>Require approval for every action</b><small>Recommended. Sending, deleting, booking and payments always ask.</small></div>
+            <button class="switch on" id="swApproval" onclick="toggleApproval(this)"></button>
+          </div>
+          <div class="row-set">
+            <div><b>Allow read-only access without asking</b><small>Searching and reading connected accounts.</small></div>
+            <button class="switch on" id="swRead" onclick="toggleRead(this)"></button>
+          </div>
+          <div class="row-set">
+            <div><b>Email me a summary of agent actions</b><small>A short daily digest of what your agent did.</small></div>
+            <button class="switch" id="swDigest" onclick="toggleDigest(this)"></button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <h3 style="margin-bottom:6px">AI model</h3>
+          <p style="font-size:13.2px;color:var(--muted);margin:0 0 14px">SwaziMind runs on its own live AI and backend. Your account, connections, chat history and approvals are stored on the server. No key needed.</p>
+          <div class="field"><label>API base URL</label><input id="setBase" type="text" placeholder="https://api.openai.com/v1"></div>
+          <div class="field"><label>API key</label><input id="setKey" type="password" placeholder="sk-…"></div>
+          <div class="field"><label>Model</label><input id="setModel" type="text" placeholder="gpt-4o-mini"></div>
+          <button class="btn btn-ghost btn-sm" onclick="saveModel()">Save model settings</button>
+        </div>
+
+        <div class="card">
+          <h3 style="margin-bottom:6px">Danger zone</h3>
+          <p style="font-size:13.2px;color:var(--muted);margin:0 0 14px">Clearing removes the local account, connections and chat history from this browser.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign out</button>
+            <button class="btn btn-danger btn-sm" onclick="wipeAll()">Clear all local data</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- modal -->
+<div class="modal" id="modal"><div class="modal-card" id="modalCard"></div></div>
+
+<!-- toast -->
+<div id="toast-root"></div>
+
+<!-- mail preview -->
+<div id="mailpanel">
+  <button class="btn btn-quiet btn-sm" style="position:absolute;top:14px;right:14px" onclick="closeMail()">✕</button>
+  <h4>Inbox preview</h4>
+  <div class="mph">Codes arrive in your real inbox</div>
+  <div id="mailList"></div>
+  <button class="btn btn-ghost btn-sm btn-block" onclick="closeMail()">Close</button>
+</div>
+<button id="mailFab" onclick="openMail()">✉️ Inbox preview <span id="mailCount">0</span></button>
+<script>
+/* SwaziMind — live build. Real backend, real email, real AI. */
+
+const K = { users:'sm.users', session:'sm.session', conns:'sm.conns', act:'sm.act', chat:'sm.chat', mail:'sm.mail' };
+
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+  set(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+};
+
+function uid(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function hash(s){ let h=5381; for(let i=0;i<s.length;i++){ h=((h<<5)+h) ^ s.charCodeAt(i); } return (h>>>0).toString(36); }
+function code6(){ return String(Math.floor(100000 + Math.random()*900000)); }
+function now(){ return Date.now(); }
+function fmt(ts){ const d=new Date(ts); return d.toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }
+
+/* ---------------- catalogue ---------------- */
+const APPS = [
+  { id:'gmail', name:'Gmail', glyph:'M', color:'#EA4335', cat:'Email',
+    desc:'Read, draft and send email with your approval.',
+    perms:['Read your Gmail messages and threads','Search your mailbox','Draft replies and new messages','Send email only after you approve each one','Apply labels and archive items you approve'] },
+  { id:'gcal', name:'Google Calendar', glyph:'31', color:'#4285F4', cat:'Calendar',
+    desc:'See your schedule and prepare events.',
+    perms:['Read your calendars and events','Create and edit events you approve','Send invitations only after approval','Set reminders and follow-ups'] },
+  { id:'gdrive', name:'Google Drive', glyph:'▲', color:'#0F9D58', cat:'Files',
+    desc:'Find documents and prepare files for you.',
+    perms:['Read files and folders you own','Search file contents','Create and edit documents you approve','Share files only after approval'] },
+  { id:'outlook', name:'Outlook', glyph:'O', color:'#0F6CBD', cat:'Email + Calendar',
+    desc:'Microsoft mail and calendar in one place.',
+    perms:['Read your Outlook mail','Read your Outlook calendar','Draft messages','Send only after approval'] },
+  { id:'slack', name:'Slack', glyph:'#', color:'#611F69', cat:'Team chat',
+    desc:'Summarise channels and post updates.',
+    perms:['Read channels you are a member of','Search messages','Draft messages','Post only after approval'] },
+  { id:'notion', name:'Notion', glyph:'N', color:'#1F1F1F', cat:'Notes',
+    desc:'Turn notes into plans, docs and briefs.',
+    perms:['Read pages and databases shared with you','Search your workspace','Create and edit pages you approve'] },
+  { id:'whatsapp', name:'WhatsApp', glyph:'W', color:'#25D366', cat:'Messaging',
+    desc:'Draft replies and gentle reminders.',
+    perms:['Read chats you explicitly allow','Draft replies for your review','Send only after approval','No access to calls or status'] },
+  { id:'github', name:'GitHub', glyph:'G', color:'#24292F', cat:'Code',
+    desc:'Track repos, issues and deployment runs.',
+    perms:['Read repositories and issues','Read workflow run status','Comment only after approval','Never push code without approval'] }
+];
+function appById(id){ return APPS.find(a => a.id === id) || { name:id, glyph:'?', color:'#555', perms:[] }; }
+
+/* ---------------- state ---------------- */
+let session = store.get(K.session, null);
+let pendingAuth = null;
+let pendingConn = null;
+
+function users(){ return store.get(K.users, []); }
+function setUsers(u){ store.set(K.users, u); }
+function currentUser(){
+  if(!session) return null;
+  return users().find(u => u.id === session.userId) || null;
+}
+function conns(){ return store.get(K.conns, {}); }
+function userConns(){
+  const u = currentUser(); if(!u) return [];
+  return conns()[u.id] || [];
+}
+function setUserConns(list){
+  const u = currentUser(); if(!u) return;
+  const all = conns(); all[u.id] = list; store.set(K.conns, all);
+}
+function activity(){
+  const u = currentUser(); if(!u) return [];
+  return store.get(K.act, {})[u.id] || [];
+}
+function logAct(title, detail, kind){
+  const u = currentUser(); if(!u) return;
+  const all = store.get(K.act, {});
+  const list = all[u.id] || [];
+  list.unshift({ ts:now(), title, detail, kind: kind || 'blue' });
+  all[u.id] = list.slice(0, 120);
+  store.set(K.act, all);
+}
+function chats(){
+  const u = currentUser(); if(!u) return [];
+  return store.get(K.chat, {})[u.id] || [];
+}
+function setChats(list){
+  const u = currentUser(); if(!u) return;
+  const all = store.get(K.chat, {}); all[u.id] = list; store.set(K.chat, all);
+}
+
+/* ---------------- mail (simulated) ---------------- */
+function mails(){ return store.get(K.mail, []); }
+function sendMail(to, subject, body, code){
+  const list = mails();
+  list.unshift({ id:uid(), to, subject, body, code, ts:now(), read:false });
+  store.set(K.mail, list.slice(0, 30));
+  renderMail();
+}
+function renderMail(){
+  const list = mails();
+  const unread = list.filter(m => !m.read).length;
+  const badge = document.getElementById('mailCount');
+  const fab = document.getElementById('mailFab');
+  if(badge) badge.textContent = unread;
+  if(fab) fab.style.display = list.length ? 'block' : 'none';
+  const box = document.getElementById('mailList');
+  if(!box) return;
+  if(!list.length){ box.innerHTML = '<div class="empty" style="padding:22px">No simulated emails yet.</div>'; return; }
+  box.innerHTML = list.map(m => `
+    <div class="mail-item">
+      <div class="from">To: ${esc(m.to)} · ${fmt(m.ts)}</div>
+      <div class="subj">${esc(m.subject)}</div>
+      <div class="body">${esc(m.body)}</div>
+      ${m.code ? `<div class="code">${esc(m.code)}</div>` : ''}
+    </div>`).join('');
+}
+function openMail(){
+  const list = mails();
+  list.forEach(m => m.read = true);
+  store.set(K.mail, list);
+  document.getElementById('mailpanel').classList.add('on');
+  renderMail();
+  const badge = document.getElementById('mailCount');
+  if(badge) badge.textContent = '0';
+}
+function closeMail(){ document.getElementById('mailpanel').classList.remove('on'); }
+
+/* ---------------- toasts ---------------- */
+function toast(msg, kind){
+  const root = document.getElementById('toast-root');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (kind || '');
+  el.textContent = msg;
+  root.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transition = '.3s'; }, 2600);
+  setTimeout(() => el.remove(), 3000);
+}
+
+/* ---------------- routing ---------------- */
+function go(view, mode){
+  if(view === 'app' && !currentUser()) view = 'auth';
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const el = document.getElementById('view-' + view);
+  if(el) el.classList.add('active');
+  window.scrollTo({ top:0, behavior:'instant' in window ? 'instant' : 'auto' });
+  if(view === 'auth'){ setAuthMode(mode || 'signin'); }
+  if(view === 'app'){ initApp(); }
+  if(view === 'landing'){ closeMail(); }
+  document.getElementById('topnav').style.display = (view === 'app') ? 'none' : '';
+  document.body.classList.toggle('inapp', view === 'app');
+}
+
+/* ---------------- auth ---------------- */
+let authMode = 'signin';
+
+function setAuthMode(mode){
+  authMode = mode;
+  const isSignup = mode === 'signup';
+  document.getElementById('tabSignin').classList.toggle('on', !isSignup);
+  document.getElementById('tabSignup').classList.toggle('on', isSignup);
+  document.getElementById('nameField').style.display = isSignup ? '' : 'none';
+  document.getElementById('authTitle').textContent = isSignup ? 'Create your SwaziMind' : 'Welcome back';
+  document.getElementById('authSub').textContent = isSignup
+    ? 'Eswatini\'s first AI, ready in under a minute.'
+    : 'Sign in to your SwaziMind account.';
+  document.getElementById('authSubmit').textContent = isSignup ? 'Create account' : 'Sign in';
+  document.getElementById('authStep1').style.display = '';
+  document.getElementById('authStep2').style.display = 'none';
+  showErr('');
+}
+
+function showErr(msg, id){
+  const el = document.getElementById(id || 'authErr');
+  if(!el) return;
+  el.textContent = msg || '';
+  el.classList.toggle('on', !!msg);
+}
+
+function backToAuth1(){
+  pendingAuth = null;
+  document.getElementById('authStep1').style.display = '';
+  document.getElementById('authStep2').style.display = 'none';
+  showErr('');
+}
+
+function startCodeFlow(purpose, name, email, pass){
+  const code = code6();
+  pendingAuth = { purpose, name, email, pass, code, exp: now() + 10*60*1000 };
+  document.getElementById('authStep1').style.display = 'none';
+  document.getElementById('authStep2').style.display = '';
+  document.getElementById('fCode').value = '';
+  document.getElementById('authCodeHint').innerHTML = 'Code sent to <b style="letter-spacing:0;font-size:13px">' + esc(email) + '</b>. Demo mode: it is shown below and in the Inbox preview.';
+  document.getElementById('authCodeHint2').textContent = 'For this prototype the code is ' + code + '. Expires in 10 minutes.';
+  showErr('', 'codeErr');
+  sendMail(email,
+    purpose === 'signup' ? 'Verify your SwaziMind account' : 'Your SwaziMind sign-in code',
+    'Sawubona. Use this code to ' + (purpose === 'signup' ? 'finish creating your SwaziMind account' : 'sign in to SwaziMind') + ':',
+    code);
+  document.getElementById('fCode').focus();
+}
+
+function submitAuth(){
+  showErr('');
+  const name = (document.getElementById('fName').value || '').trim();
+  const email = (document.getElementById('fEmail').value || '').trim().toLowerCase();
+  const pass = document.getElementById('fPass').value || '';
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showErr('Enter a valid email address.');
+  if(pass.length < 8) return showErr('Password needs at least 8 characters.');
+  const list = users();
+  if(authMode === 'signup'){
+    if(!name) return showErr('Tell us your name.');
+    if(list.some(u => u.email === email)) return showErr('That email already has an account. Sign in instead.');
+    startCodeFlow('signup', name, email, pass);
+  } else {
+    const u = list.find(x => x.email === email);
+    if(!u) return showErr('No account with that email. Create one first.');
+    if(u.pass !== hash(pass)) return showErr('Wrong password. Try again or use a sign-in code.');
+    login(u);
+  }
+}
+
+function startPasswordless(){
+  const email = (document.getElementById('fEmail').value || '').trim().toLowerCase();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showErr('Enter your email first.');
+  const u = users().find(x => x.email === email);
+  if(!u) return showErr('No account with that email. Create one first.');
+  startCodeFlow('signin', u.name, email, null);
+}
+
+function resendAuthCode(){
+  if(!pendingAuth) return;
+  startCodeFlow(pendingAuth.purpose, pendingAuth.name, pendingAuth.email, pendingAuth.pass);
+  toast('New code sent', 'ok');
+}
+
+function verifyAuthCode(){
+  showErr('', 'codeErr');
+  const val = (document.getElementById('fCode').value || '').replace(/\D/g, '');
+  if(!pendingAuth) return showErr('Start again.', 'codeErr');
+  if(val.length !== 6) return showErr('Enter the 6 digit code.', 'codeErr');
+  if(now() > pendingAuth.exp) return showErr('That code expired. Resend a new one.', 'codeErr');
+  if(val !== pendingAuth.code) return showErr('That code is not correct.', 'codeErr');
+
+  const list = users();
+  let u = list.find(x => x.email === pendingAuth.email);
+  const isNew = pendingAuth.purpose === 'signup';
+  if(isNew){
+    u = {
+      id: uid(), name: pendingAuth.name, email: pendingAuth.email,
+      pass: hash(pendingAuth.pass || ''), createdAt: now(),
+      prefs: { requireApproval:true, allowRead:true, digest:false },
+      model: { base:'', key:'', name:'' }
+    };
+    list.push(u); setUsers(list);
+  }
+  pendingAuth = null;
+  login(u);
+  if(isNew) logAct('Account created', 'Email verified with a 6 digit code.', 'green');
+}
+
+function login(u){
+  session = { userId:u.id, ts:now() };
+  store.set(K.session, session);
+  toast('Sawubona, ' + u.name.split(' ')[0] + '!', 'ok');
+  go('app');
+}
+
+function signOut(){
+  session = null;
+  store.set(K.session, null);
+  go('landing');
+  toast('Signed out');
+}
+
+/* ---------------- app shell ---------------- */
+function initApp(){
+  const u = currentUser(); if(!u) return go('auth');
+  document.getElementById('sideEmail').textContent = u.email;
+  document.getElementById('sidePlan').textContent = 'SwaziMind · Free';
+  document.getElementById('setName').value = u.name;
+  document.getElementById('setEmail').value = u.email;
+  document.getElementById('setBase').value = (u.model && u.model.base) || '';
+  document.getElementById('setKey').value = (u.model && u.model.key) || '';
+  document.getElementById('setModel').value = (u.model && u.model.name) || '';
+  document.getElementById('swApproval').classList.toggle('on', u.prefs.requireApproval);
+  document.getElementById('swRead').classList.toggle('on', u.prefs.allowRead);
+  document.getElementById('swDigest').classList.toggle('on', !!u.prefs.digest);
+  renderConns();
+  renderActivity();
+  renderChat();
+  renderMail();
+  const c = userConns().length;
+  document.getElementById('chatSub').textContent = c
+    ? c + ' app' + (c>1?'s':'') + ' connected. It prepares, you approve.'
+    : 'Ask, plan or hand over a task. Connect an app to let it act for you.';
+  showPanel('chat');
+}
+
+function showPanel(name){
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('panel-' + name);
+  if(el) el.classList.add('active');
+  document.querySelectorAll('.side-item').forEach(b => b.classList.toggle('on', b.dataset.panel === name));
+  if(name === 'connections') renderConns();
+  if(name === 'activity') renderActivity();
+}
+
+/* ---------------- connections ---------------- */
+function renderConns(){
+  const list = userConns();
+  const grid = document.getElementById('connGrid');
+  grid.innerHTML = APPS.map(a => {
+    const c = list.find(x => x.app === a.id);
+    return `<div class="conn-card">
+      <div class="conn-top">
+        <div class="glyph" style="background:${a.color}">${esc(a.glyph)}</div>
+        <div style="flex:1;min-width:0">
+          <b>${esc(a.name)}</b><small>${esc(a.cat)}</small>
+        </div>
+        <span class="pill ${c ? 'on' : 'off'}">${c ? 'Connected' : 'Not connected'}</span>
+      </div>
+      <p>${esc(a.desc)}</p>
+      <div class="conn-actions">
+        ${c
+          ? `<span class="addr">${esc(c.address)}</span>
+             <div style="display:flex;gap:6px">
+               <button class="btn btn-ghost btn-sm" onclick="openManage('${a.id}')">Manage</button>
+             </div>`
+          : `<span class="addr">${a.perms.length} permissions</span>
+             <button class="btn btn-primary btn-sm" onclick="openConnect('${a.id}')">Connect</button>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openConnect(appId){
+  const a = appById(appId);
+  const u = currentUser();
+  pendingConn = { app:appId, address:'', code:'', step:1 };
+  modal(`
+    <button class="btn btn-quiet btn-sm modal-x" onclick="closeModal()">✕</button>
+    <div class="stepper"><i class="on"></i><i></i><i></i></div>
+    <h3>Connect ${esc(a.name)}</h3>
+    <p class="msub">Step 1 of 3 · which account should SwaziMind use?</p>
+    <div class="field">
+      <label>${a.id === 'slack' || a.id === 'notion' ? 'Workspace email' : 'Account email address'}</label>
+      <input id="connEmail" type="email" placeholder="you@example.com" value="${esc(u.email)}">
+      <div class="hint">We send a 6 digit code to this address to prove it is yours.</div>
+    </div>
+    <p class="err" id="connErr"></p>
+    <button class="btn btn-primary btn-block" onclick="connSendCode()">Send verification code</button>
+    <p class="legal">Nothing is granted yet. You will see the exact permission list before confirming.</p>
+  `);
+}
+
+function connSendCode(){
+  showErr('', 'connErr');
+  const email = (document.getElementById('connEmail').value || '').trim().toLowerCase();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showErr('Enter a valid email address.', 'connErr');
+  const a = appById(pendingConn.app);
+  const code = code6();
+  pendingConn.address = email;
+  pendingConn.code = code;
+  pendingConn.exp = now() + 10*60*1000;
+  pendingConn.step = 2;
+
+  modal(`
+    <button class="btn btn-quiet btn-sm modal-x" onclick="closeModal()">✕</button>
+    <div class="stepper"><i class="on"></i><i class="on"></i><i></i></div>
+    <h3>Verify ${esc(a.name)}</h3>
+    <p class="msub">Step 2 of 3 · code sent to <b style="color:#fff">${esc(email)}</b></p>
+
+    <div class="mail-hint">Demo mode: your code is <b>${esc(code)}</b> — also in the Inbox preview.</div>
+
+    <div style="font-size:12.6px;font-weight:700;color:#CFD4DE;margin-bottom:4px">By entering this code you allow SwaziMind to manage your ${esc(a.name)} account and to:</div>
+    <div class="perm-scroll">
+      <ul>${a.perms.map(p => '<li>' + esc(p) + '</li>').join('')}
+      <li>Store the access token needed to keep this connection alive</li></ul>
+    </div>
+
+    <div class="consent">
+      <input type="checkbox" id="connConsent">
+      <label for="connConsent">I have read the list above and I allow SwaziMind to do these things on my behalf. Sending, deleting, booking and payments still require my approval on each action.</label>
+    </div>
+
+    <div class="field">
+      <label>6 digit verification code</label>
+      <input id="connCode" class="code-input" type="text" inputmode="numeric" maxlength="6" placeholder="000000">
+    </div>
+    <p class="err" id="connErr2"></p>
+    <button class="btn btn-primary btn-block" onclick="connVerify()">Verify and connect</button>
+    <button class="btn btn-quiet btn-block btn-sm" style="margin-top:6px" onclick="connResend()">Resend code</button>
+  `);
+  sendMail(email, 'Verify your ' + a.name + ' connection',
+    'Use this code to let SwaziMind connect to your ' + a.name + ' account. Entering it grants the permissions listed in SwaziMind.', code);
+  document.getElementById('connCode').focus();
+}
+
+function connResend(){
+  const a = appById(pendingConn.app);
+  pendingConn.code = code6();
+  pendingConn.exp = now() + 10*60*1000;
+  sendMail(pendingConn.address, 'Verify your ' + a.name + ' connection',
+    'Use this new code to let SwaziMind connect to your ' + a.name + ' account.', pendingConn.code);
+  toast('New code sent to ' + pendingConn.address, 'ok');
+}
+
+function connVerify(){
+  showErr('', 'connErr2');
+  const val = (document.getElementById('connCode').value || '').replace(/\D/g, '');
+  const consent = document.getElementById('connConsent').checked;
+  if(!consent) return showErr('Tick the permission box to continue.', 'connErr2');
+  if(val.length !== 6) return showErr('Enter the 6 digit code.', 'connErr2');
+  if(now() > pendingConn.exp) return showErr('That code expired. Resend a new one.', 'connErr2');
+  if(val !== pendingConn.code) return showErr('That code is not correct.', 'connErr2');
+
+  const a = appById(pendingConn.app);
+  const list = userConns().filter(c => c.app !== a.id);
+  list.push({ app:a.id, address:pendingConn.address, connectedAt:now(), perms:a.perms, verified:'code' });
+  setUserConns(list);
+  logAct(a.name + ' connected', pendingConn.address + ' verified by email code.', 'green');
+
+  modal(`
+    <div class="stepper"><i class="on"></i><i class="on"></i><i class="on"></i></div>
+    <h3>${esc(a.name)} is connected</h3>
+    <p class="msub">SwaziMind can now work with ${esc(pendingConn.address)}. Actions that change anything still wait for your approval.</p>
+    <div class="callout" style="margin-bottom:16px">
+      <span class="ico">✅</span>
+      <div>${a.perms.length + 1} permissions granted. Revoke them any time from Connections.</div>
+    </div>
+    <button class="btn btn-primary btn-block" onclick="closeModal();renderConns();initApp();showPanel('connections')">Done</button>
+  `);
+  pendingConn = null;
+  renderConns();
+  toast(a.name + ' connected', 'ok');
+}
+
+function openManage(appId){
+  const a = appById(appId);
+  const c = userConns().find(x => x.app === appId);
+  if(!c) return;
+  modal(`
+    <button class="btn btn-quiet btn-sm modal-x" onclick="closeModal()">✕</button>
+    <h3>${esc(a.name)}</h3>
+    <p class="msub">${esc(c.address)} · connected ${fmt(c.connectedAt)} · verified by email code</p>
+    <div class="perm-scroll">
+      <ul>${(c.perms || a.perms).map(p => '<li>' + esc(p) + '</li>').join('')}</ul>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost btn-block" onclick="closeModal()">Close</button>
+      <button class="btn btn-primary btn-block" style="background:linear-gradient(180deg,#3a3f4a,#2a2e36);box-shadow:none" onclick="disconnect('${a.id}')">Disconnect</button>
+    </div>
+  `);
+}
+
+function disconnect(appId){
+  const a = appById(appId);
+  setUserConns(userConns().filter(c => c.app !== appId));
+  logAct(a.name + ' disconnected', 'Access revoked by you.', 'red');
+  closeModal();
+  renderConns();
+  initApp();
+  showPanel('connections');
+  toast(a.name + ' disconnected');
+}
+
+/* ---------------- activity ---------------- */
+function renderActivity(){
+  const list = activity();
+  const box = document.getElementById('activityList');
+  if(!list.length){
+    box.innerHTML = '<div class="empty">Nothing yet. Your agent\'s actions and your approvals will show here.</div>';
+    return;
+  }
+  box.innerHTML = '<div class="timeline">' + list.map(a => `
+    <div class="tl-item">
+      <div class="tl-dot ${esc(a.kind || '')}"></div>
+      <div><b>${esc(a.title)}</b><small>${esc(a.detail)} · ${fmt(a.ts)}</small></div>
+    </div>`).join('') + '</div>';
+}
+
+/* ---------------- modal ---------------- */
+function modal(html){
+  document.getElementById('modalCard').innerHTML = html;
+  document.getElementById('modal').classList.add('on');
+}
+function closeModal(){ document.getElementById('modal').classList.remove('on'); }
+document.getElementById('modal').addEventListener('click', e => { if(e.target.id === 'modal') closeModal(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape'){ closeModal(); closeMail(); } });
+
+/* ---------------- settings ---------------- */
+function saveProfile(){
+  const u = currentUser();
+  const name = (document.getElementById('setName').value || '').trim();
+  if(!name) return toast('Name cannot be empty', 'bad');
+  const list = users();
+  const i = list.findIndex(x => x.id === u.id);
+  list[i].name = name; setUsers(list);
+  session.userId = u.id;
+  toast('Profile saved', 'ok');
+  initApp();
+}
+function togglePref(key, el){
+  const u = currentUser();
+  const list = users();
+  const i = list.findIndex(x => x.id === u.id);
+  list[i].prefs[key] = !list[i].prefs[key];
+  setUsers(list);
+  el.classList.toggle('on', list[i].prefs[key]);
+  toast(key === 'requireApproval'
+    ? (list[i].prefs.requireApproval ? 'Approval required for every action' : 'Approval turned off — agent can act directly')
+    : 'Preference saved', 'ok');
+  logAct('Preference changed', key + ' set to ' + list[i].prefs[key], 'blue');
+}
+function toggleApproval(el){ togglePref('requireApproval', el); }
+function toggleRead(el){ togglePref('allowRead', el); }
+function toggleDigest(el){ togglePref('digest', el); }
+
+function saveModel(){
+  const u = currentUser();
+  const list = users();
+  const i = list.findIndex(x => x.id === u.id);
+  list[i].model = {
+    base:(document.getElementById('setBase').value || '').trim(),
+    key:(document.getElementById('setKey').value || '').trim(),
+    name:(document.getElementById('setModel').value || '').trim()
+  };
+  setUsers(list);
+  toast(list[i].model.key ? 'Live model connected' : 'Saved — running in demo mode', 'ok');
+}
+
+function wipeAll(){
+  if(!confirm('Delete the local SwaziMind account, connections and chat history from this browser?')) return;
+  store.set(K.users, []); store.set(K.session, null); store.set(K.conns, {});
+  store.set(K.act, {}); store.set(K.chat, {}); store.set(K.mail, []);
+  session = null;
+  go('landing');
+  toast('Local data cleared');
+}
+</script>
+<script>
+/* ================= CHAT + AGENT ================= */
+let typing = false;
+
+function seedChat(){
+  const list = chats();
+  if(list.length) return;
+  list.push({
+    role:'ai', ts:now(),
+    text:"Sawubona" + (currentUser() ? ', ' + currentUser().name.split(' ')[0] : '') + ". I'm SwaziMind.\n\nI can read and prepare things in the apps you connect, then wait for your approval before anything leaves your hands.\n\nTry: \"draft a reply to my last email\" or \"plan my week\"."
+  });
+  setChats(list);
+}
+
+function renderChat(){
+  seedChat();
+  const box = document.getElementById('chatLog');
+  if(!box) return;
+  const list = chats();
+  box.innerHTML = list.map((m, i) => {
+    if(m.role === 'sys'){
+      return `<div class="msg sys"><div class="bubble">${esc(m.text)}</div></div>`;
+    }
+    const isUser = m.role === 'user';
+    return `<div class="msg ${isUser ? 'user' : 'ai'}">
+      <div class="avatar ${isUser ? 'u' : ''}">${isUser ? (currentUser().name[0] || 'U').toUpperCase() : '<div class="lgimg lg-av" aria-hidden="true"></div>'}</div>
+      <div style="min-width:0">
+        <div class="bubble">${esc(m.text)}</div>
+        ${m.action ? actionCard(m.action, i) : ''}
+      </div>
+    </div>`;
+  }).join('') + (typing ? `<div class="msg ai"><div class="avatar"><div class="lgimg lg-av" aria-hidden="true"></div></div><div class="bubble"><div class="typing"><i></i><i></i><i></i></div></div></div>` : '');
+  box.scrollTop = box.scrollHeight;
+}
+
+function actionCard(a, idx){
+  const connected = userConns().some(c => c.app === a.app);
+  const app = appById(a.app);
+  const cls = a.state === 'done' ? 'done' : a.state === 'declined' ? 'declined' : '';
+  const head = a.state === 'done' ? '✓ Approved and executed' : a.state === 'declined' ? '✕ Declined by you' : 'Approval needed · ' + app.name;
+  let foot = '';
+  if(a.state === 'pending'){
+    foot = connected
+      ? `<button class="btn btn-primary btn-sm" onclick="resolveAction(${idx},'approve')">Approve</button>
+         <button class="btn btn-ghost btn-sm" onclick="resolveAction(${idx},'decline')">Decline</button>`
+      : `<button class="btn btn-primary btn-sm" onclick="openConnect('${a.app}')">Connect ${esc(app.name)} first</button>
+         <button class="btn btn-ghost btn-sm" onclick="resolveAction(${idx},'decline')">Dismiss</button>`;
+  }
+  return `<div class="action-card ${cls}">
+    <div class="ac-top">${esc(head)}</div>
+    <h4>${esc(a.title)}</h4>
+    <p>${esc(a.detail)}</p>
+    <div class="ac-foot">${foot}</div>
+  </div>`;
+}
+
+function resolveAction(idx, decision){
+  const list = chats();
+  const m = list[idx];
+  if(!m || !m.action || m.action.state !== 'pending') return;
+  m.action.state = decision === 'approve' ? 'done' : 'declined';
+  const app = appById(m.action.app);
+  if(decision === 'approve'){
+    logAct(m.action.title, 'Approved by you · ' + app.name, 'green');
+    list.push({ role:'sys', ts:now(), text:'You approved: ' + m.action.title + '. Logged in Activity.' });
+  } else {
+    logAct('Declined: ' + m.action.title, app.name + ' · nothing was sent', 'red');
+    list.push({ role:'sys', ts:now(), text:'You declined: ' + m.action.title + '. Nothing happened.' });
+  }
+  setChats(list);
+  renderChat();
+  renderActivity();
+  toast(decision === 'approve' ? 'Approved' : 'Declined', decision === 'approve' ? 'ok' : '');
+}
+
+function quickAsk(text){
+  document.getElementById('chatInput').value = text;
+  sendChat();
+}
+
+function sendChat(){
+  const ta = document.getElementById('chatInput');
+  const text = (ta.value || '').trim();
+  if(!text || typing) return;
+  ta.value = ''; ta.style.height = '46px';
+  const list = chats();
+  list.push({ role:'user', ts:now(), text });
+  setChats(list);
+  renderChat();
+  typing = true;
+  renderChat();
+  respond(text);
+}
+
+function respond(userText){
+  const u = currentUser();
+  const hasKey = u && u.model && u.model.key;
+  const history = chats().filter(m => m.role !== 'sys').slice(-12)
+    .map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.text }));
+
+  const finish = (aiMsg, note) => {
+    typing = false;
+    const list = chats();
+    if(note) list.push({ role:'sys', ts:now(), text:note });
+    list.push(aiMsg);
+    setChats(list);
+    renderChat();
+  };
+
+  if(hasKey){
+    callModel(history, u).then(txt => {
+      finish({ role:'ai', ts:now(), text: txt });
+    }).catch(err => {
+      const d = demoBrain(userText);
+      finish(d, 'Live model unreachable (' + err.message + '). SwaziMind answered in demo mode instead.');
+    });
+    return;
+  }
+
+  setTimeout(() => {
+    const d = demoBrain(userText);
+    finish(d);
+  }, 700 + Math.random() * 500);
+}
+
+async function callModel(history, u){
+  const base = (u.model.base || 'https://api.openai.com/v1').replace(/\/+$/, '');
+  const connList = userConns().map(c => appById(c.app).name + ' (' + c.address + ')').join(', ') || 'none yet';
+  const sys = "You are SwaziMind, Eswatini's first AI assistant, built in Eswatini. You are warm, concise and practical. "
+    + "Connected apps: " + connList + ". "
+    + "You may draft, read, plan and prepare freely, but you must never claim to have sent, deleted, booked or paid for anything. "
+    + "For those, say you have prepared it and ask the user to approve the action card. "
+    + "Answer in the user's language. Keep replies under 120 words unless asked for detail.";
+  const res = await fetch(base + '/chat/completions', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + u.model.key },
+    body: JSON.stringify({
+      model: u.model.name || 'gpt-4o-mini',
+      temperature: 0.7,
+      messages: [{ role:'system', content:sys }, ...history]
+    })
+  });
+  if(!res.ok) throw new Error('HTTP ' + res.status);
+  const j = await res.json();
+  const txt = j.choices && j.choices[0] && j.choices[0].message && j.choices[0].message.content;
+  if(!txt) throw new Error('empty reply');
+  return txt;
+}
+
+/* ---- local demo brain: works with zero setup ---- */
+function demoBrain(raw){
+  const t = (raw || '').toLowerCase();
+  const conns = userConns();
+  const has = id => conns.some(c => c.app === id);
+  const names = conns.map(c => appById(c.app).name);
+
+  const act = (app, title, detail) => ({ id:uid(), app, title, detail, state:'pending' });
+
+  if(/^(hi|hey|hello|sawubona|yo|hola|dumela)\b/.test(t) || t.length < 4){
+    return { role:'ai', ts:now(), text:"Sawubona. What are we getting done today?\n\nI can read your inbox, draft replies, plan your week, summarise documents — then wait for your go-ahead before anything is sent." };
+  }
+  if(/what can you do|capabilit|help me with|features|who are you|what are you/.test(t)){
+    return { role:'ai', ts:now(), text:"I'm your SwaziMind agent. Practically:\n\n• Read and summarise your email and documents\n• Draft replies, briefs, posts and plans in your voice\n• Prepare calendar events and reminders\n• Keep a task list and follow up on it\n• Work across Gmail, Calendar, Drive, Outlook, Slack, Notion, WhatsApp and GitHub\n\nThe one rule: anything that sends, deletes, books or pays waits for your approval on an action card." };
+  }
+  if(/eswatini|swazi|siswati|mbabane|local/.test(t) && !/email|calendar/.test(t)){
+    return { role:'ai', ts:now(), text:"SwaziMind is built here, for here. That means siSwati and English, local context — Mbabane and Manzini time, SZL amounts, emalangeni, local names and places — and it runs the same whether you're on fibre in Ezulwini or mobile data in Siteki." };
+  }
+  if(/connect|which apps|my connections|integrat/.test(t)){
+    return { role:'ai', ts:now(), text: names.length
+      ? "Connected right now: " + names.join(', ') + ".\n\nWant another? Open Connections, pick the app, enter its email address and paste the 6 digit code we send. You'll see the full permission list before you confirm."
+      : "Nothing connected yet. Open Connections, pick an app, enter the email address on that account, and paste back the 6 digit code we send you. The permission list appears before anything is granted — and you can revoke it any time." };
+  }
+  if(/email|inbox|reply|gmail|draft|send/.test(t)){
+    if(/reply|respond/.test(t)){
+      return { role:'ai', ts:now(), text:"I pulled the most recent thread and drafted a reply that matches your tone: short, direct, no filler.\n\nI have not sent it. Approve below and it goes out from your account.", action: act('gmail','Send reply to the latest thread','Subject: Re: your last message · 3 short paragraphs · sent from your Gmail') };
+    }
+    return { role:'ai', ts:now(), text:"Here's the state of your inbox:\n\n• 14 unread, 3 of them actually need you\n• 2 invoices waiting for a reply\n• 1 thread from Thobeka about the article\n\nI can draft all three replies now. Want me to?", action: act('gmail','Draft 3 replies','Replies to the 3 threads that need you, in your voice. Nothing sends until you approve each one.') };
+  }
+  if(/calendar|meeting|schedule|week|plan|diary|event/.test(t)){
+    return { role:'ai', ts:now(), text:"Here's a plan for the week:\n\nMon — deep work 08:00–11:00, admin after lunch\nTue — two calls, keep the afternoon clear\nWed — writing block, no meetings before 12:00\nThu — review + follow-ups\nFri — light day, close loose ends\n\nI can place these as events with reminders. Say the word and I'll prepare them.", action: act('gcal','Create 5 focus blocks this week','Mon–Fri, mornings held for deep work, with 10 minute reminders. You can still move them after.') };
+  }
+  if(/summar|document|file|drive|pdf/.test(t)){
+    return { role:'ai', ts:now(), text:"Send me the file or tell me which document to look at. I'll give you a one page summary: what it says, what it means for you, and the three things that need a decision." };
+  }
+  if(/price|cost|free|pay|subscription/.test(t)){
+    return { role:'ai', ts:now(), text:"This build runs free while you test it. Paid plans would sit on top of the same rules: you approve every action, and your data stays yours. Nothing is charged inside this prototype." };
+  }
+  if(/thank|thanks|sharp|nice|great/.test(t)){
+    return { role:'ai', ts:now(), text:"Any time. I'll keep the drafts ready and stay out of the way until you approve something." };
+  }
+  return { role:'ai', ts:now(), text:"Got it — \"" + raw.trim().slice(0, 90) + "\".\n\nTell me which app this should happen in and I'll prepare it. Anything that sends or changes something comes back to you as an action card first.\n\nUseful starters: \"draft a reply to my last email\", \"plan my week\", \"summarise this document\"." };
+}
+
+/* ================= BOOT ================= */
+document.getElementById('yr').textContent = new Date().getFullYear();
+(function boot(){
+  const strip = document.getElementById('appsStrip');
+  strip.innerHTML = APPS.map(a => `
+    <div class="app-chip">
+      <div class="glyph" style="background:${a.color}">${esc(a.glyph)}</div>
+      <div><b>${esc(a.name)}</b><small>${esc(a.cat)}</small></div>
+    </div>`).join('');
+
+  renderMail();
+
+  if(currentUser()){
+    go('app');
+  } else {
+    go('landing');
+  }
+})();
+</script>
+
+<!--
+================================================================
+ SwaziMind — live build
+ Live API: https://superagent-b4b57471.base44.app/functions/smApi
+ Open it in any modern browser, or host this file anywhere.
+================================================================
+-->
+</body>
+</html>
+<script>
+/* diagnostics: surface any script error in the tab title */
+window.addEventListener('error', function(e){
+  var m = (e && e.message) ? e.message : 'unknown error';
+  document.title = 'JSERR: ' + String(m).slice(0, 140);
+}, true);
+window.addEventListener('unhandledrejection', function(e){
+  var m = (e && e.reason && (e.reason.message || e.reason)) || 'promise error';
+  document.title = 'JSERR: ' + String(m).slice(0, 140);
+}, true);
+</script>
+<script>
+/* ============================================================
+   SwaziMind — live layer
+   Replaces the prototype's localStorage + demo brain with the
+   real backend: real accounts, real emails, real database,
+   real AI, real approvals.
+   ============================================================ */
+
+const SM_API_URL = 'https://superagent-b4b57471.base44.app/functions/smApi';
+const SM_TOKEN_KEY = 'sm.live.token';
+const SM_DECIDED_KEY = 'sm.decided';
+
+let SM_TOKEN = '';
+try { SM_TOKEN = localStorage.getItem(SM_TOKEN_KEY) || ''; } catch(e) {}
+let SM_USER = null, SM_CONNS = [], SM_ACTS = [], SM_MSGS = [];
+let SM_PENDING = null, SM_CONN = null;
+
+function smTokenSet(t){
+  SM_TOKEN = t || '';
+  try { t ? localStorage.setItem(SM_TOKEN_KEY, t) : localStorage.removeItem(SM_TOKEN_KEY); } catch(e) {}
+}
+
+function smDecided(id){
+  try { const m = JSON.parse(localStorage.getItem(SM_DECIDED_KEY) || '{}'); return m[id] || ''; } catch(e) { return ''; }
+}
+function smMark(id, state){
+  try { const m = JSON.parse(localStorage.getItem(SM_DECIDED_KEY) || '{}'); m[id] = state; localStorage.setItem(SM_DECIDED_KEY, JSON.stringify(m)); } catch(e) {}
+}
+
+async function smApi(action, body){
+  const res = await fetch(SM_API_URL, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-sm-token': SM_TOKEN },
+    body: JSON.stringify(Object.assign({ action: action }, body || {}))
+  });
+  let j = null;
+  try { j = await res.json(); } catch(e) { throw new Error('SwaziMind could not be reached. Check your connection.'); }
+  if(!j) throw new Error('SwaziMind could not be reached. Check your connection.');
+  return j;
+}
+
+function smApply(j){
+  if(j.user) SM_USER = j.user;
+  if(Array.isArray(j.connections)) SM_CONNS = j.connections;
+  if(Array.isArray(j.activity)) SM_ACTS = j.activity;
+  if(Array.isArray(j.messages)) SM_MSGS = j.messages;
+}
+
+async function smHydrate(){
+  if(!SM_TOKEN) return false;
+  try {
+    const j = await smApi('me', {});
+    if(!j.ok){ smTokenSet(''); return false; }
+    smApply(j);
+    return true;
+  } catch(e) { return false; }
+}
+
+/* ---------------- state the UI reads ---------------- */
+function smPrefs(){
+  let p = { requireApproval:true, allowRead:true, digest:false };
+  try { const v = localStorage.getItem('sm.prefs'); if(v) p = Object.assign(p, JSON.parse(v)); } catch(e) {}
+  return p;
+}
+function currentUser(){
+  if(!SM_USER) return null;
+  return { name: SM_USER.name, email: SM_USER.email, prefs: smPrefs() };
+}
+function userConns(){ return SM_CONNS || []; }
+function setUserConns(){}
+function activity(){ return SM_ACTS || []; }
+function logAct(){}
+function chats(){ return SM_MSGS || []; }
+function setChats(){}
+
+/* no simulated inbox in live mode: codes arrive by real email */
+function mails(){ return []; }
+function sendMail(){ return false; }
+function renderMail(){
+  const fab = document.getElementById('mailFab');
+  if(fab) fab.style.display = 'none';
+}
+function openMail(){
+  toast('Verification codes are emailed to your real inbox.');
+}
+
+/* ---------------- app shell ---------------- */
+async function initApp(){
+  if(!SM_USER){
+    const ok = await smHydrate();
+    if(!ok){ go('auth'); return; }
+  }
+  const u = currentUser();
+  document.getElementById('sideEmail').textContent = u.email;
+  document.getElementById('sidePlan').textContent = 'SwaziMind · Free';
+  document.getElementById('setName').value = u.name;
+  document.getElementById('setEmail').value = u.email;
+  ['setBase','setKey','setModel'].forEach(function(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.value = '';
+    try { const f = el.closest('.field'); if(f) f.style.display = 'none'; } catch(e) {}
+  });
+  const sw = function(id, on){ const el = document.getElementById(id); if(el) el.classList.toggle('on', !!on); };
+  sw('swApproval', u.prefs.requireApproval);
+  sw('swRead', u.prefs.allowRead);
+  sw('swDigest', !!u.prefs.digest);
+  renderConns();
+  renderActivity();
+  renderChat();
+  renderMail();
+  const c = userConns().length;
+  document.getElementById('chatSub').textContent = c
+    ? c + ' app' + (c>1?'s':'') + ' connected. It prepares, you approve.'
+    : 'Ask, plan or hand over a task. Connect an app to let it act for you.';
+  showPanel('chat');
+}
+
+/* ---------------- auth ---------------- */
+function smStep2(email, emailed){
+  document.getElementById('authStep1').style.display = 'none';
+  document.getElementById('authStep2').style.display = '';
+  document.getElementById('fCode').value = '';
+  const h1 = document.getElementById('authCodeHint');
+  if(h1) h1.innerHTML = emailed
+    ? 'We emailed a 6 digit code to <b style="letter-spacing:0;font-size:13px">' + esc(email) + '</b>. Check your inbox and your spam folder.'
+    : 'We could not email that address. Check it and try again.';
+  const h2 = document.getElementById('authCodeHint2');
+  if(h2) h2.textContent = 'The code expires in 10 minutes.';
+  showErr('', 'codeErr');
+  const f = document.getElementById('fCode');
+  if(f) f.focus();
+}
+
+async function submitAuth(){
+  showErr('');
+  const isSignup = (typeof authMode !== 'undefined') && authMode === 'signup';
+  const name = (document.getElementById('fName').value || '').trim();
+  const email = (document.getElementById('fEmail').value || '').trim().toLowerCase();
+  const pass = (document.getElementById('fPass').value || '');
+  const btn = document.getElementById('authSubmit');
+  if(btn) btn.disabled = true;
+  try {
+    if(isSignup){
+      if(name.length < 2) return showErr('Enter your full name.');
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showErr('Enter a valid email address.');
+      if(pass.length < 8) return showErr('Use at least 8 characters for your password.');
+      const j = await smApi('signup', { name: name, email: email, password: pass });
+      if(!j.ok) return showErr(j.error || 'Could not create the account.');
+      SM_PENDING = { purpose:'signup', email: email, name: name, password: pass };
+      smStep2(email, j.emailed);
+      if(!j.emailed) toast('The code could not be emailed. Try resending.');
+    } else {
+      if(!email || !pass) return showErr('Enter your email and password.');
+      const j = await smApi('login', { email: email, password: pass });
+      if(!j.ok) return showErr(j.error || 'Could not sign in.');
+      smTokenSet(j.token);
+      smApply(j);
+      toast('Sawubona, ' + String(j.user.name || '').split(' ')[0] + '!', 'ok');
+      go('app');
+    }
+  } catch(e) {
+    showErr(e.message || 'Could not reach SwaziMind.');
+  } finally {
+    if(btn) btn.disabled = false;
+  }
+}
+
+async function verifyAuthCode(){
+  showErr('', 'codeErr');
+  if(!SM_PENDING) return showErr('Start again.', 'codeErr');
+  const code = (document.getElementById('fCode').value || '').replace(/\D/g, '');
+  if(code.length !== 6) return showErr('Enter the 6 digit code.', 'codeErr');
+  try {
+    const act = SM_PENDING.purpose === 'signup' ? 'verifySignup' : 'verifyLogin';
+    const j = await smApi(act, { email: SM_PENDING.email, code: code });
+    if(!j.ok) return showErr(j.error || 'That code is not correct.', 'codeErr');
+    smTokenSet(j.token);
+    smApply(j);
+    SM_PENDING = null;
+    toast('Sawubona, ' + String(j.user.name || '').split(' ')[0] + '!', 'ok');
+    go('app');
+  } catch(e) {
+    showErr(e.message || 'Could not reach SwaziMind.', 'codeErr');
+  }
+}
+
+async function startPasswordless(){
+  showErr('');
+  const email = (document.getElementById('fEmail').value || '').trim().toLowerCase();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showErr('Enter your email address first.');
+  try {
+    const j = await smApi('sendLoginCode', { email: email });
+    if(!j.ok) return showErr(j.error || 'Could not send the code.');
+    SM_PENDING = { purpose:'login', email: email };
+    smStep2(email, j.emailed);
+  } catch(e) {
+    showErr(e.message || 'Could not reach SwaziMind.');
+  }
+}
+
+async function resendAuthCode(){
+  if(!SM_PENDING) return showErr('Start again.', 'codeErr');
+  try {
+    const j = SM_PENDING.purpose === 'signup'
+      ? await smApi('signup', { name: SM_PENDING.name, email: SM_PENDING.email, password: SM_PENDING.password })
+      : await smApi('sendLoginCode', { email: SM_PENDING.email });
+    if(!j.ok) return showErr(j.error || 'Could not resend.', 'codeErr');
+    toast('New code sent to ' + SM_PENDING.email, 'ok');
+  } catch(e) {
+    showErr(e.message || 'Could not reach SwaziMind.', 'codeErr');
+  }
+}
+
+function backToAuth1(){
+  SM_PENDING = null;
+  document.getElementById('authStep1').style.display = '';
+  document.getElementById('authStep2').style.display = 'none';
+  showErr('');
+  showErr('', 'codeErr');
+}
+
+async function signOut(){
+  try { await smApi('logout', {}); } catch(e) {}
+  smTokenSet('');
+  SM_USER = null; SM_CONNS = []; SM_ACTS = []; SM_MSGS = [];
+  go('landing');
+  toast('Signed out');
+}
+
+/* ---------------- connections ---------------- */
+function openConnect(appId){
+  const a = appById(appId);
+  const u = currentUser();
+  SM_CONN = { app: appId, address: '' };
+  modal(
+    '<button class="btn btn-quiet btn-sm modal-x" onclick="closeModal()">✕</button>' +
+    '<div class="stepper"><i class="on"></i><i></i><i></i></div>' +
+    '<h3>Connect ' + esc(a.name) + '</h3>' +
+    '<p class="msub">Step 1 of 3 · which account should SwaziMind use?</p>' +
+    '<div class="field"><label>' + (a.id === 'slack' || a.id === 'notion' ? 'Workspace email' : 'Account email address') + '</label>' +
+    '<input id="connEmail" type="email" placeholder="you@example.com" value="' + esc(u ? u.email : '') + '">' +
+    '<div class="hint">We send a real 6 digit code to this address to prove it is yours.</div></div>' +
+    '<p class="err" id="connErr"></p>' +
+    '<button class="btn btn-primary btn-block" onclick="connSendCode()">Send verification code</button>' +
+    '<p class="legal">Nothing is granted yet. You will see the exact permission list before confirming.</p>'
+  );
+}
+
+function smConnStep2(a, email, emailed){
+  modal(
+    '<button class="btn btn-quiet btn-sm modal-x" onclick="closeModal()">✕</button>' +
+    '<div class="stepper"><i class="on"></i><i class="on"></i><i></i></div>' +
+    '<h3>Verify ' + esc(a.name) + '</h3>' +
+    '<p class="msub">Step 2 of 3 · ' + (emailed ? 'code emailed to ' : 'code for ') + '<b>' + esc(email) + '</b></p>' +
+    '<div style="font-size:12.6px;font-weight:700;margin-bottom:4px">By entering this code you allow SwaziMind to manage your ' + esc(a.name) + ' account and to:</div>' +
+    '<div class="perm-scroll"><ul>' + a.perms.map(function(p){ return '<li>' + esc(p) + '</li>'; }).join('') +
+    '<li>Store the access token needed to keep this connection alive</li></ul></div>' +
+    '<div class="consent"><input type="checkbox" id="connConsent">' +
+    '<label for="connConsent">I have read the list above and I allow SwaziMind to do these things on my behalf. Sending, deleting, booking and payments still require my approval on each action.</label></div>' +
+    '<div class="field"><label>6 digit verification code</label>' +
+    '<input id="connCode" class="code-input" type="text" inputmode="numeric" maxlength="6" placeholder="000000"></div>' +
+    '<p class="err" id="connErr2"></p>' +
+    '<button class="btn btn-primary btn-block" onclick="connVerify()">Verify and connect</button>' +
+    '<button class="btn btn-quiet btn-block btn-sm" style="margin-top:6px" onclick="connResend()">Resend code</button>'
+  );
+  const f = document.getElementById('connCode');
+  if(f) f.focus();
+}
+
+async function connSendCode(){
+  showErr('', 'connErr');
+  const email = (document.getElementById('connEmail').value || '').trim().toLowerCase();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showErr('Enter a valid email address.', 'connErr');
+  const appId = SM_CONN ? SM_CONN.app : '';
+  const a = appById(appId);
+  try {
+    const j = await smApi('sendConnectCode', { app_id: appId, address: email });
+    if(!j.ok) return showErr(j.error || 'Could not send the code.', 'connErr');
+    SM_CONN = { app: appId, address: email };
+    smConnStep2(a, email, j.emailed);
+  } catch(e) {
+    showErr(e.message || 'Could not reach SwaziMind.', 'connErr');
+  }
+}
+
+async function connResend(){
+  if(!SM_CONN) return;
+  try {
+    const j = await smApi('sendConnectCode', { app_id: SM_CONN.app, address: SM_CONN.address });
+    if(!j.ok) return toast(j.error || 'Could not resend.');
+    toast('New code sent to ' + SM_CONN.address, 'ok');
+  } catch(e) { toast('Could not reach SwaziMind.'); }
+}
+
+async function connVerify(){
+  showErr('', 'connErr2');
+  const val = (document.getElementById('connCode').value || '').replace(/\D/g, '');
+  const box = document.getElementById('connConsent');
+  if(!box || !box.checked) return showErr('Tick the permission box to continue.', 'connErr2');
+  if(val.length !== 6) return showErr('Enter the 6 digit code.', 'connErr2');
+  if(!SM_CONN) return showErr('Start again.', 'connErr2');
+  const a = appById(SM_CONN.app);
+  try {
+    const j = await smApi('verifyConnect', { app_id: SM_CONN.app, address: SM_CONN.address, code: val, consent: true });
+    if(!j.ok) return showErr(j.error || 'That code is not correct.', 'connErr2');
+    smApply(j);
+    const perms = a.perms.length + 1;
+    modal(
+      '<div class="stepper"><i class="on"></i><i class="on"></i><i class="on"></i></div>' +
+      '<h3>' + esc(a.name) + ' is connected</h3>' +
+      '<p class="msub">SwaziMind can now work with ' + esc(SM_CONN.address) + '. Actions that change anything still wait for your approval.</p>' +
+      '<div class="callout" style="margin-bottom:16px"><span class="ico">✅</span><div>' + perms + ' permissions granted. Revoke them any time from Connections.</div></div>' +
+      '<button class="btn btn-primary btn-block" onclick="closeModal();renderConns();initApp()">Done</button>'
+    );
+    renderConns();
+    toast(a.name + ' connected', 'ok');
+    SM_CONN = null;
+  } catch(e) {
+    showErr(e.message || 'Could not reach SwaziMind.', 'connErr2');
+  }
+}
+
+function openManage(appId){
+  const a = appById(appId);
+  const c = userConns().find(function(x){ return x.app === appId; });
+  if(!c) return;
+  modal(
+    '<button class="btn btn-quiet btn-sm modal-x" onclick="closeModal()">✕</button>' +
+    '<h3>' + esc(a.name) + '</h3>' +
+    '<p class="msub">' + esc(c.address) + ' · connected ' + fmt(c.connectedAt) + ' · verified by email code</p>' +
+    '<div class="perm-scroll"><ul>' + (c.perms || a.perms).map(function(p){ return '<li>' + esc(p) + '</li>'; }).join('') + '</ul></div>' +
+    '<div style="display:flex;gap:8px">' +
+    '<button class="btn btn-ghost btn-block" onclick="closeModal()">Close</button>' +
+    '<button class="btn btn-primary btn-block" style="background:#B3261E;box-shadow:none" onclick="disconnect(\'' + a.id + '\')">Disconnect</button>' +
+    '</div>'
+  );
+}
+
+async function disconnect(appId){
+  try {
+    const j = await smApi('disconnect', { app_id: appId });
+    if(!j.ok) return toast(j.error || 'Could not disconnect.');
+    smApply(j);
+    closeModal();
+    renderConns();
+    renderActivity();
+    toast(appById(appId).name + ' disconnected');
+  } catch(e) { toast('Could not reach SwaziMind.'); }
+}
+
+/* ---------------- chat ---------------- */
+function sendChat(){
+  const ta = document.getElementById('chatInput');
+  const text = (ta.value || '').trim();
+  if(!text || typing) return;
+  ta.value = ''; ta.style.height = '46px';
+  SM_MSGS.push({ role:'user', text: text, ts: Date.now() });
+  typing = true;
+  renderChat();
+  smAsk(text);
+}
+
+async function smAsk(text){
+  try {
+    const j = await smApi('chat', { message: text });
+    typing = false;
+    if(!j.ok){
+      SM_MSGS.push({ role:'sys', ts: Date.now(), text: j.error || 'Something went wrong.' });
+      renderChat();
+      return;
+    }
+    smApply(j);
+    renderChat();
+    renderActivity();
+  } catch(e) {
+    typing = false;
+    SM_MSGS.push({ role:'sys', ts: Date.now(), text: 'Could not reach SwaziMind. Check your connection and try again.' });
+    renderChat();
+  }
+}
+
+function actionCard(a, idx){
+  const state = smDecided(a.id) || a.state || 'pending';
+  const app = appById(a.app);
+  const connected = userConns().some(function(c){ return c.app === a.app; });
+  const cls = state === 'done' ? 'done' : state === 'declined' ? 'declined' : '';
+  const head = state === 'done' ? '✓ Approved and executed'
+    : state === 'declined' ? '✕ Declined by you'
+    : 'Approval needed · ' + app.name;
+  let foot = '';
+  if(state === 'pending'){
+    foot = connected
+      ? '<button class="btn btn-primary btn-sm" onclick="resolveAction(' + idx + ',\'approve\')">Approve</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="resolveAction(' + idx + ',\'decline\')">Decline</button>'
+      : '<button class="btn btn-primary btn-sm" onclick="openConnect(\'' + a.app + '\')">Connect ' + esc(app.name) + ' first</button>' +
+        '<button class="btn btn-ghost btn-sm" onclick="resolveAction(' + idx + ',\'decline\')">Dismiss</button>';
+  }
+  return '<div class="action-card ' + cls + '">' +
+    '<div class="ac-top">' + esc(head) + '</div>' +
+    '<h4>' + esc(a.title) + '</h4>' +
+    '<p>' + esc(a.detail) + '</p>' +
+    '<div class="ac-foot">' + foot + '</div>' +
+  '</div>';
+}
+
+async function resolveAction(idx, decision){
+  const m = chats()[idx];
+  if(!m || !m.action || (smDecided(m.action.id) || m.action.state) !== 'pending') return;
+  try {
+    const j = await smApi('approveAction', { action_id: m.action.id, decision: decision });
+    if(!j.ok) return toast(j.error || 'Could not complete that.');
+    smMark(m.action.id, decision === 'approve' ? 'done' : 'declined');
+    smApply(j);
+    renderChat();
+    renderActivity();
+    toast(decision === 'approve' ? (j.executed ? 'Approved and done' : 'Approved') : 'Declined', decision === 'approve' ? 'ok' : '');
+  } catch(e) {
+    toast('Could not reach SwaziMind.');
+  }
+}
+
+/* ---------------- settings ---------------- */
+async function saveProfile(){
+  const name = (document.getElementById('setName').value || '').trim();
+  try {
+    const j = await smApi('saveProfile', { name: name });
+    if(!j.ok) return toast(j.error || 'Could not save.');
+    SM_USER = j.user;
+    toast('Profile saved', 'ok');
+    initApp();
+  } catch(e) { toast('Could not reach SwaziMind.'); }
+}
+
+function saveModel(){
+  toast('SwaziMind runs on its own AI. No key needed.', 'ok');
+}
+
+async function wipeAll(){
+  try {
+    const j = await smApi('wipe', {});
+    if(!j.ok) return toast(j.error || 'Could not clear your data.');
+    smApply(j);
+    renderChat();
+    renderActivity();
+    renderConns();
+    toast('Your data was cleared');
+  } catch(e) { toast('Could not reach SwaziMind.'); }
+}
+
+/* ---------------- boot ---------------- */
+(function smBoot(){
+  renderMail();
+  if(SM_TOKEN){
+    smHydrate().then(function(ok){ go(ok ? 'app' : 'landing'); });
+  } else {
+    go('landing');
+  }
+})();
+</script>
